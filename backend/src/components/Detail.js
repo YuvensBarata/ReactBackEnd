@@ -3,14 +3,32 @@ import { Link } from "react-router-dom";
 
 class Detail extends Component {
 
+    constructor() {
+        super();
+        this.state = {
+          value: "",
+          qty: "",
+        };
+        this.handleChange = this.handleChange.bind(this);
+        this.handleChangeQty = this.handleChangeQty.bind(this);
+      }
+
     getcolorid = (id, name_id) => {
         this.props.getColorID(id, name_id);
     }
 
-    // addtocart = (cart_data) => {
-    //     this.props.addToCart(cart_data);
+    addtocart = (cart_data) => {
+        this.props.addToCart(cart_data);
+        // console.log(cart_data)
         
-    // }
+    }
+
+    handleChange(e) {
+        this.setState({value : e.target.value})
+    }
+    handleChangeQty(e) {
+        this.setState({qty: e.target.value})
+    }
 
     render() {
         const color = this.props.color2.map((x) => {
@@ -29,7 +47,12 @@ class Detail extends Component {
         {
             size = this.props.size2.map((x) => {
                 return (
-                        <option value = {x.id} key = {x.id}>Size {x.size} and stock {x.stock} </option>
+                    <div  key = {x.id}>
+                        <li>
+                        {/* <option value = {x.id} key = {x.id}>Size {x.size} and stock {x.stock} and ID {x.id} </option> */}
+                        <input type = "radio" name = "sizeid" value = {x.id}/> <label htmlFor = "sizeid"> Size {x.size} dan Stock {x.stock} dan ID {x.id} </label>
+                        </li>
+                    </div>
                 )
             })
         }
@@ -72,18 +95,20 @@ class Detail extends Component {
                 </div>
 
                 <div>
-                    <select ref = "id">
+                    {/* <select onChange = {this.handleChange}> */}
+                    <ul onChange = {this.handleChange}>
                         {size}
-                    </select>
+                    </ul>
+                    {/* </select> */}
                 </div>
                 <br/> <br/>
                 <div>
-                    <input type = "number" ref = "qtybeli" placeholder = "Jumlah Pembelian" />
+                    <input type = "number" ref = "qtybeli" placeholder = "Jumlah Pembelian" onInput = {this.handleChangeQty}/>
                 </div>
 
                 <br/><br/>
 
-                <Link to = {"/cart"}><input type = "submit" value = "Add to Cart" /></Link>
+                <input type = "submit" onClick={() => this.addtocart(this.state)} value = "ADD TO CART" />
             </div>
         )
     }

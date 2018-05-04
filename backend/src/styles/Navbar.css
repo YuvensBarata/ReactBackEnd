@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css?family=Leckerli+One');
+
+.header
+{
+    background-color: blue;
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+}
+
+.register
+{
+    margin-left: 90%;
+}
+
+.logo
+{
+    font-family : "Leckerli One", cursive;
+    color: white !important;
+}
+
+.btn-header
+{
+    background-color: blue;
+    color: white;
+    width: 120px;
+}
+
+.btn-header:hover
+{
+    background-color: white;
+    color: blue;
+    width: 120px;
+}

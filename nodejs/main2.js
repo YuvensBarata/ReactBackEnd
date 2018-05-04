@@ -717,7 +717,7 @@ app.post("/user_register", function(req,res)
         
             status_register = "OK";
         }
-
+        
         res.json(status_register);
 
     });
@@ -758,7 +758,7 @@ app.post("/user_login", function(req,res)
             nama = null;
             id_user = null;
         }
-
+        
         res.json({login_status,nama,id_user});
         
     })  
@@ -858,9 +858,9 @@ app.get("/user_product_details/:id", function(req,res)
 
 //----------------------------------------------- USER CART ----------------------------------------------------
 
-app.get("/cart", function(req,res)
+app.get("/cart/:id", function(req,res)
 {
-    if (req.session.user_nama == null)
+    if (req.params.id === undefined)
     {
         login_status = "false"
         res.json(login_status);
@@ -869,29 +869,32 @@ app.get("/cart", function(req,res)
     {
         connection.query("SELECT * FROM cart_2 where ?",
         {
-            user_login_id : req.session.user_id
+            user_login_id : req.params.id
         },
         function(err,rows)
         {
             if (err) throw err;
-
-            res.render("user_cart",{data1:rows, sesi : req.session.user_nama})
+            // console.log(rows);
+            res.json(rows);
         })
     }
 })
 
-app.post("/cart", function(req,res)
+app.post("/cart/:id", function(req,res)
 {
-    if (req.session.user_nama == null)
+    // console.log(req.body);
+    var cart_status;
+
+    if (req.body.namacart.length <= 0)
     {
-        login_status = "false"
-        res.json(login_status);
+        cart_status = "NOT_OK"
+        res.json(cart_status);
     }
     else
     {
         connection.query("SELECT id, size, product_color_id FROM product_size where ?",
         {
-            id : req.body.sizeid
+            id : req.body.id
         },
         function(err,rows1)
         {
@@ -909,7 +912,7 @@ app.post("/cart", function(req,res)
                 {
                     connection.query("INSERT cart_2 set ?",
                     {
-                        user_login_id : req.session.user_id,
+                        user_login_id : req.params.id,
                         product_size_id : rows1[0].id,
                         product_name : rows3[0].product_name,
                         price : rows3[0].price,
@@ -917,7 +920,9 @@ app.post("/cart", function(req,res)
                         size : rows1[0].size,
                         quantity : req.body.qtybeli
                     })
-                    cart_status = "OK";
+
+                    cart_status = "OK"
+
                     res.json(cart_status);
                 })
             })
@@ -926,64 +931,47 @@ app.post("/cart", function(req,res)
  
 })
 
-app.get("/edit_cart/:id", function(req,res)
-{
-    if (req.session.user_nama == null)
-    {
-        res.redirect("/user_login")
-    }
-    else
-    {
-        res.render("user_edit_cart", {id : req.params.id,sesi:sesi.user_nama});
-    }
-});
-
 app.post("/edit_cart/:id", function(req,res)
 {
+    var redirect_cart;
+
     connection.query("update cart_2 set ? where ?",
         [
             {
-                quantity : req.body.edit_quantity
+                quantity : req.body.qty
             }
         ,
             {
-                id : req.params.id,
+                id : req.body.cartid
             }
         ]);
-        res.redirect("/cart");
+        redirect_cart = "OK";
+
+        res.json(redirect_cart);
 })
 
 app.get("/delete_cart/:id", function(req,res)
 {
-    if (req.session.user_nama == null)
+    var redirect_cart;
+
+    connection.query("delete from cart_2 where ?",
     {
-        res.redirect("/user_login")
-    }
-    else
-    {
-        connection.query("delete from cart_2 where ?",
-        {
-            id: req.params.id
-        });
-        res.redirect("/cart");
-    }
+        id: req.params.id
+    });
+
+    redirect_cart = "OK";
+    res.json(redirect_cart);
 });
 
 //-------------------------------------------- CHECKOUT ---------------------------------------------------------
 
 app.post("/checkout", function(req,res)
 {
-    var kode_invoice = "INV" + req.session.user_id + (new Date).getMonth() + (new Date).getHours() + (new Date).getSeconds();
+    var kode_invoice = "INV" + req.body.id_cart + (new Date).getMonth() + (new Date).getHours() + (new Date).getSeconds();
 
-    if (req.session.user_nama == null)
-    {
-        res.redirect("/user_login")
-    }
-    else
-    {
         connection.query("SELECT * FROM cart_2 where ?",
         {
-            user_login_id : req.session.user_id
+            user_login_id : req.body.id_cart
         },
         function(err,rows1)
         {
@@ -1032,26 +1020,18 @@ app.post("/checkout", function(req,res)
 
             connection.query("DELETE FROM cart_2 where ?",
             {
-                user_login_id : req.session.user_id
+                user_login_id : req.body.id_cart
             })
-
-            res.redirect("/invoice_user/" + kode_invoice);
         })
-        
-        
-    }
+
+        var redirect_invoice = "OK";
+        res.json({redirect_invoice,kode_invoice});
 })
 
 //---------------------------------------------- INVOICE USER --------------------------------------------------------
 
 app.get("/invoice_user/:id", function(req,res)
 {
-    if (req.session.user_nama == null)
-    {
-        res.redirect("/user_login")
-    }
-    else
-    {
         connection.query("SELECT * FROM invoice_data where ?",
         {
             kode_invoice : req.params.id
@@ -1065,49 +1045,23 @@ app.get("/invoice_user/:id", function(req,res)
             function(err,rows2)
             {
                 if (err) throw err;
-                res.render("user_invoice",{data1 : rows1, data2: rows2, sesi: req.session.user_nama})
+                res.json({rows1,rows2});
             })
         })
-    }
 })
 
 //------------------------------------------- INVOICE HISTORY USER ----------------------------------------------
 
-app.get("/invoice_history_user", function(req,res)
+app.get("/invoice_history_user/:id", function(req,res)
 {
-    if (req.session.user_nama == null)
-    {
-        res.redirect("/user_login")
-    }
-    else
-    {
         connection.query("SELECT kode_invoice, total_price, time FROM invoice_data where ?",
         {
-            username_id : req.session.user_id
+            username_id : req.params.id
         },
         function(err,rows1)
         {
-            if (err) throw err;
-            res.render("user_invoice_history", {data1 : rows1, sesi: req.session.user_nama})
+            res.json(rows1)
         })
-    }
-})
-
-//------------------------------------------------- LOGOUT -----------------------------------------------------
-
-app.get("/logout", function(req,res)
-{
-    req.session.destroy(function(err)
-    {
-        if (err)
-        {
-            console.log(err);
-        }
-        else
-        {
-            res.redirect("/");
-        }
-    })
 })
 
 

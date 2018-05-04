@@ -1,24 +1,71 @@
 import React, {Component} from "react";
 import { Link } from "react-router-dom";
 
+import "../styles/Navbar.css";
 
 class Navbar extends Component {
 
+    logout = () => {
+        this.props.logOut();
+    }
+    
     render() {
 
         let test;
 
 
+        // if (this.props.nama_user.length > 0)
+        // {
+        //     test = (<div>Welcome, {this.props.nama_user}! &nbsp; &nbsp; <Link to = {`/user_home`}> Home </Link>&nbsp; &nbsp; <Link to = {`/invoice_history_user/${this.props.id_user}`}>Invoice History </Link>&nbsp; &nbsp; <Link to = {`/cart/${this.props.id_user}`}> Cart </Link> &nbsp; &nbsp;<Link to = {"/user_home"} onClick = {() => this.logout()}> Log Out </Link></div>)
+        // }
+        // else
+        // {
+        //     test = (<div><Link to = {"/user_login"}>Log In</Link> &nbsp; &nbsp; <Link to = {"/user_register"}>Sign Up </Link></div>)
+        // }
+
         if (this.props.nama_user.length > 0)
         {
-            test = (<div><h2>Welcome, {this.props.nama_user}! Invoice History Cart <Link to = {"/logout"}> Log Out </Link></h2></div>)
+            test = (
+                <div className = "bot-header">
+                <center>
+                    <Link to = "/user_home"><button className = "btn btn-header"><span className = "glyphicon glyphicon-home"></span> &nbsp;&nbsp; Home</button></Link>
+                    <Link to = "/invoice_history_user"><button className = "btn btn-header"><span className = "glyphicon glyphicon-list-alt"></span> &nbsp;&nbsp; Invoice History</button></Link>
+                    <Link to = {`/cart/${this.props.id_user}`}><button className = "btn btn-header"><span className = "glyphicon glyphicon-shopping-cart"></span> &nbsp;&nbsp; Cart</button></Link>
+                    <Link to = {"/user_home"} onClick = {() => this.logout()}><button className = "btn btn-header"><span className = "glyphicon glyphicon-fire"></span> &nbsp;&nbsp; Log Out</button></Link>
+                </center>
+            </div>
+            )
         }
         else
         {
-            test = <h2> <Link to = {"/user_login"}>Log In</Link> <Link to = {"/user_register"}>Sign Up </Link> </h2>
+            test = (
+            <div className = "bot-header">
+                <center>
+                    <Link to = "/user_home"><button className = "btn btn-header"><span className = "glyphicon glyphicon-home"></span> &nbsp;&nbsp; Home</button></Link>
+                    <Link to = "/user_login"><button className = "btn btn-header"><span className = "glyphicon glyphicon-user"></span> &nbsp;&nbsp; Log In</button></Link>
+                    <Link to = "/user_register"><button className = "btn btn-header"><span className = "glyphicon glyphicon-pencil"></span> &nbsp;&nbsp; Register</button></Link>
+                </center>
+            </div>
+            )
         }
 
-        return test
+        return (
+            <div className = "header">
+                <div className = "top-header">
+                    <center>
+                        Hubungi Kami di 14045!
+                    </center>
+                </div>
+
+                <div className = "mid-header">
+                    <center>
+                        <h1 className = "logo">CelanaSobek</h1>
+                    </center>
+                </div>
+
+                {test}
+            </div>
+        )
     }
     
 }

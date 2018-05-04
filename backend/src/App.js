@@ -10,13 +10,16 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Navbar from "./components/Navbar";
 import Cart from "./components/Cart";
+import EditCart from "./components/EditCart";
+import Invoice from "./components/Invoice";
+import Invoice_history from "./components/Invoice_history";
 
 class App extends Component 
 {
 
   constructor() {
     super();
-    this.state = {season: [],category: [], product: [], product_detail: [], color: [], size: [], nama_user: [], id_user: [], status_login: [], redirect_login: false, redirect_register: false, redirect_home: false, redirect_cart: false};
+    this.state = {season: [],category: [], product: [], product_detail: [], color: [], size: [], nama_user: [], id_user: [], status_login: [], redirect_login: false, redirect_register: false, redirect_home: false, redirect_cart: false, redirect_inv: false, tempCartId: [], tempInvoiceId: []};
   }
 
   componentWillMount()
@@ -119,25 +122,92 @@ class App extends Component
       })
   }
 
-  // addtocart = (cart_data) => {
-  //   axios.post('http://localhost:3001/cart',
-  //   { 
-  //     id : cart_data.id.value,
-  //     qtybeli : cart_data.qtybeli.value
-  //   })
-  //   .then((ambilStatusCart) => {
-  //     if (ambilStatusCart.data === "OK")
-  //     {
-  //       this.setState({redirect_cart: true});
-  //     }
-  //     else 
-  //     {
-  //       this.setState({redirect_login: true});
-  //       this.setState({redirect_register: false});
-  //     }
-  //   })
-  // }
+  addtocart = (cart_data) => {
+    // console.log(cart_data.qty);
+    // console.log(cart_data.value);
+    axios.post('http://localhost:3001/cart/'+this.state.id_user,
+    { 
+      id : cart_data.value,
+      qtybeli : cart_data.qty,
+      namacart : this.state.nama_user,
+      idcart : this.state.id_user
+    })
+    .then((ambilStatusCart) => {
+      // console.log(ambilStatusCart);
+      if (ambilStatusCart.data === "NOT_OK")
+      {
+        this.setState({redirect_login: true});
+        this.setState({redirect_register: false});
+      }
+      else
+      {
+        this.setState({redirect_cart: true});
+      }
+    })
+  }
 
+  getcartid = (id) => {
+    this.setState({tempCartId: id});
+    return(
+      <Redirect to = {`/edit_cart/${this.state.tempCartId}`} />
+    )
+  }
+
+  postedit = (edit_qty) => {
+    axios.post(`http://localhost:3001/edit_cart/${this.state.tempCartId}`,
+    {
+      qty: edit_qty.quantity.value,
+      cartid : this.state.tempCartId,
+    })
+    .then((redirect) => {
+      if (redirect.data === "OK")
+      {
+        this.setState({redirect_cart: true});
+      }
+    })
+  }
+
+  deletecartid = (id) => {
+      axios.get(`http://localhost:3001/delete_cart/${id}`)
+      .then((redirect) => {
+        if (redirect.data === "OK")
+        {
+          this.setState({redirect_cart: true});
+        }
+      })
+  }
+
+  checkout = (data) => {
+    axios.post(`http://localhost:3001/checkout`,
+    {
+      id_cart : this.state.id_user,
+      nama_penerima : data.nama_penerima.value,
+      telp_penerima : data.telp_penerima.value,
+      alamat_penerima : data.alamat_penerima.value,
+      grand_total : data.grand_total.value,
+    })
+    .then((redirect) => {
+      // console.log(redirect.data.redirect_invoice);
+      // console.log(redirect.data.kode_invoice);
+      if (redirect.data.redirect_invoice === "OK")
+      {
+        this.setState({tempInvoiceId: redirect.data.kode_invoice})
+        this.setState({redirect_inv : true});
+      }
+    })
+  }
+
+  getinvid = (id) => {
+    this.setState({tempInvoiceId : id});
+    return (
+      <Redirect to = {`/invoice_history_user/${this.state.id_user}`} />
+    )
+  }
+
+  logout = () => {
+    this.setState({nama_user: ""});
+    this.setState({id_user : ""});
+  }
 
 
     render() {
@@ -146,6 +216,7 @@ class App extends Component
       const {redirect_register} = this.state;
       const {redirect_home} = this.state;
       const {redirect_cart} = this.state;
+      const {redirect_inv} = this.state;
 
       if (redirect_home) {
         this.setState({redirect_home: false});
@@ -171,20 +242,31 @@ class App extends Component
       if (redirect_cart) {
         this.setState({redirect_cart: false});
         return (
-        <Redirect to='/cart'/>
+        <Redirect to = {`/cart/${this.state.id_user}`}/>
+        )
+      }
+
+      if (redirect_inv) {
+        this.setState({redirect_inv: false});
+        return(
+          <Redirect to = {`/invoice_user/${this.state.tempInvoiceId}`}/>
         )
       }
       
     return(
         <div className = "content">
-            <Navbar nama_user={this.state.nama_user} id_user={this.state.id_user}/>
+            <Navbar nama_user={this.state.nama_user} id_user={this.state.id_user} logOut = {this.logout}/>
+            {/* <Route path = "/" render = {() => <Redirect to = "/user_home"/>}/> */}
             <Route path = "/user_home" render = {() => <Main season={this.state.season} getSeasonID={this.getseasonid}/>}/>
             <Route path = "/user_category" render = {() => <Category category2={this.state.category} getCategoryID={this.getcategoryid}/>}/>
             <Route path = "/user_product" render = {() => <Product product2={this.state.product} getDetailID={this.getdetailid}/>}/>
-            <Route path = "/user_product_details/:id" render = {() => <Detail product2={this.state.product_detail} color2={this.state.color} size2={this.state.size} getColorID={this.getcolorid}/>}/>
+            <Route path = "/user_product_details/:id" render = {() => <Detail product2={this.state.product_detail} color2={this.state.color} size2={this.state.size} id2={this.state.id_user} getColorID={this.getcolorid} addToCart={this.addtocart}/>}/>
             <Route path = "/user_login" render = {() => <Login postLogin={this.postlogin}/>}/>
             <Route path = "/user_register" render = {() => <Register postRegis={this.postregis}/>}/>
-            <Route path = "/cart" render ={() => <Cart/>}/>
+            <Route path = {`/cart/${this.state.id_user}`} render ={() => <Cart id_user={this.state.id_user} getCartID={this.getcartid} deleteCartID={this.deletecartid} checkOut={this.checkout}/> }/>
+            <Route path = "/edit_cart/:id" render = {() => <EditCart postEdit={this.postedit}/>}/>
+            <Route path = {`/invoice_user/${this.state.tempInvoiceId}`} render ={() => <Invoice invoice_kode={this.state.tempInvoiceId}/>}/>
+            <Route path = {`/invoice_history_user/${this.state.id_user}`} render = {() => <Invoice_history id_user = {this.state.id_user} getInvID = {this.getinvid}/>} />
         </div>
     )
   }
