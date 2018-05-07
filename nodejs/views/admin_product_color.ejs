@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Admin Product Color</title>
+        <style>
+            table {border: 1px solid black}
+        </style>
+    </head>
+
+    <body>
+    <% include navbar/navbar_admin.ejs %>
+    <h2>Product <%= data1[0].product_name %></h2>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Color</th>
+            </tr>
+        </thead>
+    
+        <tbody>
+            <% data2.forEach (x => { %>
+                <tr>
+                <td> <%= x.id %> </td>
+                <td> <a href = "/admin_size/<%= x.id %>"> <%= x.color %> </td>
+                <td> <a href = "/edit_color/<%= x.id %>"> Edit </td>
+                <td> <a href = "/delete_color/<%= x.id %>"> Delete </td>
+                </tr>
+            <% }) %>
+    
+        </tbody>
+        
+    </table>
+    
+    <br>
+    
+    <h3> <a href = "/add_color/<%= data1[0].id %>" > Add Color </a> </h3>
+    
+    </body>
+
+</html>

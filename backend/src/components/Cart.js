@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import { Link } from "react-router-dom";
 
 import axios from 'axios';
-
+import "../styles/Cart.css";
 
 class Cart extends Component {
 
@@ -39,6 +39,7 @@ class Cart extends Component {
             return(
                 <tbody key ={index}>
                     <tr>
+                        <td>{index + 1}</td>
                         <td>{x.product_name}</td>
                         <td>{x.color}</td>
                         <td>{x.size}</td>
@@ -59,28 +60,71 @@ class Cart extends Component {
         }
 
         return(
-            <div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th> Product Name </th>
-                            <th> Color </th>
-                            <th> Size </th>
-                            <th> Quantity </th>
-                            <th> Price </th>
-                            <th> Total </th>
-                        </tr>
-                    </thead>
-                    {data}
-                </table>
+            <div className = "container">
+
+                <div className = "panel panel-default col-md-offset-2 col-md-8 col-lg-offset-2 col-lg-8">
+                    <table className = "table">
+                        <thead>
+                            <tr>
+                                <th> No. </th>
+                                <th> Product Name </th>
+                                <th> Color </th>
+                                <th> Size </th>
+                                <th> Quantity </th>
+                                <th> Price </th>
+                                <th> Total </th>
+                            </tr>
+                        </thead>
+                        {data}
+                        <tbody>
+                            <tr>
+                                <td colSpan = "7"><b>Grand Total : Rp {a} <input type = "number" ref = "grand_total" value = {a} hidden/></b></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <br/><br/>
 
-                Grand Total : Rp {a}
-                <input type = "number" ref = "grand_total" value = {a} hidden/>
+                <div className = "panel panel-default col-md-offset-2 col-md-8 col-lg-offset-2 col-lg-8">
+                    <div className = "panel-heading">
+                        <h3 className = "panel-title">Data Penerima</h3>
+                    </div>
 
-                <br/><br/>
-                Data Penerima:
+                    <div className = "panel-body">
+                        <div className = "form-horizontal">
+
+                            <div className = "form-group">
+                                <label htmlFor = "name" className = "control-label col-sm-3">Nama</label> &nbsp;
+                                <div className = "penerima col-sm-8">
+                                    <input type = "text" ref = "nama_penerima" className = "form-control" placeholder = "Username" />
+                                </div>
+                            </div>
+
+                            <div className = "form-group">
+                                <label htmlFor = "telp" className = "control-label col-sm-3">No. Telp</label> &nbsp;
+                                <div className = "telp col-sm-8">
+                                    <input type = "text" ref = "telp_penerima" className = "form-control" placeholder = "Password" />
+                                </div>
+                            </div>
+
+                            <div className = "form-group">
+                                <label htmlFor = "alamat" className = "control-label col-sm-3">Alamat</label> &nbsp;
+                                <div className = "alamat col-sm-8">
+                                    <input type = "text" ref = "alamat_penerima" className = "form-control" placeholder = "Password" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <center>
+                                    <input className = "btn btn-checkout" type="submit" onClick={() => this.checkout(this.refs)} value = "CHECK OUT"/>
+                                </center>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Data Penerima:
                 <br/><br/>
 
                 Nama : <input type = "text" ref = "nama_penerima" />
@@ -95,7 +139,7 @@ class Cart extends Component {
 
                 <br/><br/>
 
-                <input type = "submit" onClick={() => this.checkout(this.refs)} value = "CHECK OUT"/>
+                <input type = "submit" onClick={() => this.checkout(this.refs)} value = "CHECK OUT"/> */}
             </div>
         )
     }

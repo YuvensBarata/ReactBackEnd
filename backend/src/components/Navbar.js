@@ -29,7 +29,7 @@ class Navbar extends Component {
                 <div className = "bot-header">
                 <center>
                     <Link to = "/user_home"><button className = "btn btn-header"><span className = "glyphicon glyphicon-home"></span> &nbsp;&nbsp; Home</button></Link>
-                    <Link to = "/invoice_history_user"><button className = "btn btn-header"><span className = "glyphicon glyphicon-list-alt"></span> &nbsp;&nbsp; Invoice History</button></Link>
+                    <Link to = {`/invoice_history_user/${this.props.id_user}`}><button className = "btn btn-header"><span className = "glyphicon glyphicon-list-alt"></span> &nbsp;&nbsp; History</button></Link>
                     <Link to = {`/cart/${this.props.id_user}`}><button className = "btn btn-header"><span className = "glyphicon glyphicon-shopping-cart"></span> &nbsp;&nbsp; Cart</button></Link>
                     <Link to = {"/user_home"} onClick = {() => this.logout()}><button className = "btn btn-header"><span className = "glyphicon glyphicon-fire"></span> &nbsp;&nbsp; Log Out</button></Link>
                 </center>

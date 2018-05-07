@@ -1,0 +1,47 @@
+<body>
+<% include navbar/navbar_admin.ejs %>
+
+    <h2> Invoice </h2>
+    <br>
+
+    <h3> Kode Invoice : <%= data1[0].kode_invoice %> </h3>
+    <br>
+
+    Nama Penerima : <%= data1[0].nama_penerima %> <br>
+    Alamat Penerima : <%= data1[0].alamat_penerima %><br>
+    No. Telp : <%= data1[0].telp_penerima %><br><br>
+
+    <table>
+        <thead>
+            <tr>
+                <th> No. </th>
+                <th> Product Name </th>
+                <th> Color </th>
+                <th> Size </th>
+                <th> Quantity </th>
+                <th> Price </th>
+                <th> Total </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <% for (i = 0; i < data2.length; i ++) { %>
+                <tr>
+                    <td> <%= i + 1%> </td>
+                    <td> <%= data2[i].product_name %> </td>
+                    <td> <%= data2[i].product_color %> </td>
+                    <td> <%= data2[i].product_size %> </td>
+                    <td> <%= data2[i].quantity %> </td>
+                    <td> Rp <%= data2[i].price %> </td>
+                    <td> Rp <%= data2[i].quantity * data2[i].price %> </td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+    <br>
+
+    <% var a = 0 %>
+    <% for (i = 0; i < data1.length; i++) { %>
+        <% a = (data2[i].quantity * data2[i].price) + a %>
+    <% } %>
+    Grand Total : Rp <%= a %>

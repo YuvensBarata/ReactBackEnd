@@ -1,0 +1,19 @@
+<body>
+<% include navbar/navbar_admin.ejs %>
+    <h2> Edit Product Size </h2>
+
+    <form id = "insert" method = "post" action = "/edit_size/<%= id %>">
+        Size:
+        <input type = "text" name = "size" value = "">
+
+        <br><br>
+
+        Stock:
+        <input type = "text" name = "stock" value = "">
+
+        <br><br>
+
+        <input type = "submit" value = "EDIT">
+    </form>
+    
+</body>

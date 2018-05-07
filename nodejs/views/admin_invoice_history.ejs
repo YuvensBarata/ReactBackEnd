@@ -1,0 +1,25 @@
+<body>
+
+    <% include navbar/navbar_admin.ejs %>
+
+    <h3> History Invoice </h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th> No. </th>
+                <th> Kode Invoice </th>
+                <th> Grand Total Price </th>
+                <th> Time and Date </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <% for (i = 0; i < data1.length; i ++) { %>
+                <tr>
+                    <td> <%= i + 1%> </td>
+                    <td> <a href = "/invoice_admin/<%= data1[i].kode_invoice %>"> <%= data1[i].kode_invoice %> </a> </td>
+                    <td> <%= data1[i].total_price %> </td>
+                    <td> <%= data1[i].time %> </td>
+                </tr>
+            <% } %>

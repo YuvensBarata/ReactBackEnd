@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Admin Product Name</title>
+        <style>
+            table {border: 1px solid black}
+        </style>
+    </head>
+
+    <body>
+    <% include navbar/navbar_admin.ejs %>
+    <h2>Product <%= data1[0].category %></h2>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Description</th>
+                <th>Image</th>
+            </tr>
+        </thead>
+    
+        <tbody>
+            <% data2.forEach (x => { %>
+                <tr>
+                <td> <%= x.id %> </td>
+                <td> <a href = "/admin_color/<%= x.id %>"> <%= x.product_name %> </td>
+                <td> <%= x.price %> </td>
+                <td> <%= x.description %> </td>
+                <td> <img src = "/images/<%= x.product_image_name %>" alt = "<%= x.product_image_name %>" height = "200px" width = "200px"> </td>
+                <td> <a href = "/edit_product/<%= x.id %>"> Edit </td>
+                <td> <a href = "/delete_product/<%= x.id %>"> Delete </td>
+                </tr>
+            <% }) %>
+    
+        </tbody>
+        
+    </table>
+    
+    <br>
+    
+    <h3> <a href = "/add_product/<%= data1[0].id %>"> Add Product </a> </h3>
+    
+    </body>
+
+</html>

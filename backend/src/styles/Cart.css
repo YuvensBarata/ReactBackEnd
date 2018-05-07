@@ -1,0 +1,20 @@
+.btn-checkout
+{
+    background-color: blue;
+    color: white;
+    width: 150px;
+}
+
+.btn-checkout:hover
+{
+    background-color: white;
+    color: blue;
+    -webkit-box-shadow:inset 0px 0px 0px 2px blue;
+    -moz-box-shadow:inset 0px 0px 0px 2px blue;
+    box-shadow:inset 0px 0px 0px 2px blue;
+}
+
+.form-control:focus
+{
+    border: 2px solid blue;
+}

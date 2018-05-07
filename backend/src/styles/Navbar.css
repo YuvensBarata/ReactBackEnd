@@ -31,3 +31,10 @@
     color: blue;
     width: 120px;
 }
+
+.btn-header:active
+{
+    background-color: white;
+    color: blue;
+    width: 120px;
+}

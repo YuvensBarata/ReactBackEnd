@@ -1,0 +1,22 @@
+.btn-cart
+{
+    background-color: blue;
+    color: white;
+    margin: 5px;
+    width: 150px;
+}
+
+.btn-cart:hover
+{
+    -webkit-box-shadow:inset 0px 0px 0px 2px blue;
+    -moz-box-shadow:inset 0px 0px 0px 2px blue;
+    box-shadow:inset 0px 0px 0px 2px blue;
+    background-color: white;
+    color: blue;
+}
+
+.foto-produk
+{
+    width: 200px;
+    height: 200px;
+}

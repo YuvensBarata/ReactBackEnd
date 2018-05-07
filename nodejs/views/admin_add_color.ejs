@@ -1,0 +1,14 @@
+<body>
+<% include navbar/navbar_admin.ejs %>
+    <h2> Add Product Color </h2>
+
+    <form id = "insert" method = "post" action = "/add_color/<%= id %>">
+        Color:
+        <input type = "text" name = "color" value = "">
+
+        <br><br>
+
+        <input type = "submit" value = "ADD">
+    </form>
+    
+</body>

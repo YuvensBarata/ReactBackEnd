@@ -1,4 +1,5 @@
 import React, {Component} from "react";
+import { Link } from "react-router-dom";
 
 import axios from 'axios';
 
@@ -29,6 +30,7 @@ class Invoice extends Component {
             return(
                 <tbody key ={index}>
                     <tr>
+                        <td> {index +1} </td>
                         <td>{x.product_name}</td>
                         <td>{x.color}</td>
                         <td>{x.size}</td>
@@ -57,35 +59,75 @@ class Invoice extends Component {
         }
 
         return(
-            <div>
-                <h2>Invoice</h2>
-                <br/><br/>
+            <div className = "container">
+                <div className = "panel panel-default col-md-offset-2 col-md-8 col-lg-offset-2 col-lg-8">
 
-                Kode Invoice : {this.props.invoice_kode}
-                <br/><br/>
+                    <div className = "panel-heading">
+                        <h3 className = "panel-title">Invoice</h3>
+                    </div>
 
-                {data_penerima}
+                    <div className = "panel-body">
+                        Kode Invoice : {this.props.invoice_kode}
+                        <br/><br/>
+                        {data_penerima}
+                        <br/>
 
-                <br/>
+                        <table className = "table">
+                            <thead>
+                                <tr>
+                                    <th> No. </th>
+                                    <th> Product Name </th>
+                                    <th> Color </th>
+                                    <th> Size </th>
+                                    <th> Quantity </th>
+                                    <th> Price </th>
+                                    <th> Total </th>
+                                </tr>
+                            </thead>
+                            {data}
+                            <tbody>
+                                <tr>
+                                    <td colSpan = "7"> <b>Grand Total : Rp {a}</b></td>
+                                </tr>
+                            </tbody>
+                        </table>
 
-                <table>
-                    <thead>
-                        <tr>
-                            <th> Product Name </th>
-                            <th> Color </th>
-                            <th> Size </th>
-                            <th> Quantity </th>
-                            <th> Price </th>
-                            <th> Total </th>
-                        </tr>
-                    </thead>
-                    {data}
-                </table>
-                
-                <br/><br/>
+                        <center><Link to = "/user_home">Back To Home</Link> </center>
+                    </div>
 
-                Grand Total : Rp {a}
+                </div>
             </div>
+
+            // <div>
+            //     <h2>Invoice</h2>
+            //     <br/><br/>
+
+            //     Kode Invoice : {this.props.invoice_kode}
+            //     <br/><br/>
+
+            //     {data_penerima}
+
+            //     <br/>
+
+            //     <table>
+                    // <thead>
+                    //     <tr>
+                    //         <th> No. </th>
+                    //         <th> Product Name </th>
+                    //         <th> Color </th>
+                    //         <th> Size </th>
+                    //         <th> Quantity </th>
+                    //         <th> Price </th>
+                    //         <th> Total </th>
+                    //     </tr>
+                    // </thead>
+                    // {data}
+            //     </table>
+                
+            //     <br/><br/>
+
+            //     Grand Total : Rp {a}
+            // </div>
         )
     }
 

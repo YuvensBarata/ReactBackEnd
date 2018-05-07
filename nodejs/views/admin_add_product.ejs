@@ -1,0 +1,28 @@
+<body>
+<% include navbar/navbar_admin.ejs %>
+    <h2> Add Product Name </h2>
+
+    <form id = "insert" method = "post" action = "/add_product/<%= id %>" enctype="multipart/form-data">
+        Product Name:
+        <input type = "text" name = "product" value = "">
+
+        <br><br>
+
+        Price:
+        <input type = "text" name = "price" value = "">
+
+        <br><br>
+
+        Description:
+        <input type = "text" name = "description" value = "">
+
+        <br><br>
+
+        <input type = "file" name = "userfile" accept = ".jpg, .png, .jpeg, .bmp" required/>
+
+        <br><br>
+
+        <input type = "submit" value = "ADD">
+    </form>
+    
+</body>

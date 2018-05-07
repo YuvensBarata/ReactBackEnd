@@ -1,0 +1,14 @@
+<body>
+<% include navbar/navbar_admin.ejs %>
+    <h2> Edit Season </h2>
+
+    <form id = "insert" method = "post" action = "/edit_season/<%= id %>">
+        Season:
+        <input type = "text" name = "season" value = "">
+
+        <br><br>
+
+        <input type = "submit" value = "EDIT">
+    </form>
+    
+</body>

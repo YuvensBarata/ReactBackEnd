@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Admin Home</title>
+        <style>
+            table {border: 1px solid black}
+        </style>
+    </head>
+
+    <body>
+    <% include navbar/navbar_admin.ejs %>
+    <h2>My Product</h2>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Season</th>
+            </tr>
+        </thead>
+    
+        <tbody>
+            <% data.forEach (x => { %>
+                <tr>
+                <td> <%= x.id %> </td>
+                <td> <a href = "/admin_category/<%= x.id %>"> <%= x.season %> </td>
+                <td> <a href = "/edit_season/<%= x.id %>"> Edit </td>
+                <td> <a href = "/delete_season/<%= x.id %>"> Delete </td>
+                </tr>
+            <% }) %>
+    
+        </tbody>
+        
+    </table>
+    
+    <br>
+    
+    <h3> <a href = "/add_season"> Add Season </a> </h3>
+    
+    </body>
+
+</html>

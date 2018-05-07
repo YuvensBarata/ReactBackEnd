@@ -1,0 +1,14 @@
+<body>
+<% include navbar/navbar_admin.ejs %>
+    <h2> Edit Product Category </h2>
+
+    <form id = "insert" method = "post" action = "/edit_category/<%= id %>">
+        Category:
+        <input type = "text" name = "category" value = "">
+
+        <br><br>
+
+        <input type = "submit" value = "EDIT">
+    </form>
+    
+</body>

@@ -27,6 +27,7 @@ class Invoice_history extends Component {
             return(
                 <tbody key = {index}>
                     <tr>
+                        <td>{index +1}</td>
                         <td> <Link to = {`/invoice_user/${x.kode_invoice}`} onClick={() => this.getinvid(x.kode_invoice)}> {x.kode_invoice} </Link> </td>
                         <td> {x.total_price} </td>
                         <td> {x.time} </td>
@@ -36,21 +37,46 @@ class Invoice_history extends Component {
         })
 
         return(
-            <div>
-                <h2> Invoice History </h2>
+            <div className = "container">
+                <div className = "panel panel-default col-md-offset-2 col-md-8 col-lg-offset-2 col-lg-8">
 
-                <table>
-                    <thead>
-                        <tr>
-                            <th> Kode Invoice </th>
-                            <th> Grand Total Price </th>
-                            <th> Time and Date </th>
-                        </tr>
-                    </thead>
+                    <div className = "panel-heading">
+                        <h3 className = "panel-title">Invoice History</h3>
+                    </div>
 
-                    {data}
-                </table>
+                    <div className = "panel-body">
+                        <table className = "table">
+                            <thead>
+                                <tr>
+                                    <th>No. </th>
+                                    <th> Kode Invoice </th>
+                                    <th> Grand Total Price </th>
+                                    <th> Time and Date </th>
+                                </tr>
+                            </thead>
+
+                            {data}
+                        </table>
+                    </div>
+                </div>
             </div>
+
+            // <div>
+            //     <h2> Invoice History </h2>
+
+            //     <table>
+                    // <thead>
+                    //     <tr>
+                    //         <th>No. </th>
+                    //         <th> Kode Invoice </th>
+                    //         <th> Grand Total Price </th>
+                    //         <th> Time and Date </th>
+                    //     </tr>
+                    // </thead>
+
+                    // {data}
+            //     </table>
+            // </div>
         )
     }
 }

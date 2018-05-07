@@ -1,0 +1,16 @@
+.panel-default>.panel-heading
+{
+    background-color: blue;
+    background-image: none;
+}
+
+.panel-title
+{
+    color: white;
+    font-weight: bold;
+}
+
+.panel
+{
+    margin-top: 5%;
+}
