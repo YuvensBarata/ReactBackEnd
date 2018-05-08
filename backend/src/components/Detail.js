@@ -66,17 +66,21 @@ class Detail extends Component {
         let name;
         let price;
         let description;
+        let image;
+
         if (this.props.product2.length > 0)
         {
             name = this.props.product2[0].product_name;
             price = this.props.product2[0].price;
             description = this.props.product2[0].description;
+            image = this.props.product2[0].product_image_name;
         }
         else
         {
             name = "ERROR";
             price = "ERROR";
             description = "ERROR";
+            image = "ERROR";
         }
 
         return(
@@ -97,7 +101,7 @@ class Detail extends Component {
                             <tbody>
                                 <tr>
                                     <td rowSpan = "3"> 
-                                        <img src = "https://vignette.wikia.nocookie.net/janethevirgin/images/4/42/Image-not-available_1.jpg/revision/latest?cb=20150721102313" alt = "Image" className = "foto-produk" />
+                                        <img src = {process.env.PUBLIC_URL + "/images/" + image} alt = "Image" className = "foto-produk" />
                                     </td>
                                     <td><ul>{color}</ul></td>
                                 </tr>

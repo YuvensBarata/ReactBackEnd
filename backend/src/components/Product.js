@@ -31,7 +31,7 @@ class Product extends Component {
                 <tbody key = {index}>
                     <tr>
                         <td rowSpan = "2"> 
-                            <img src = "https://vignette.wikia.nocookie.net/janethevirgin/images/4/42/Image-not-available_1.jpg/revision/latest?cb=20150721102313" alt = "Image" className = "foto-produk" />
+                            <img src = {process.env.PUBLIC_URL + `/images/${x.product_image_name}`} alt = "Image" className = "foto-produk" />
                         </td>
                         <td>Nama Produk : </td>
                         <td><Link to = {`/user_product_details/${x.id}`} onClick={() => this.getdetailid(x.id)}>{x.product_name} </Link></td>
