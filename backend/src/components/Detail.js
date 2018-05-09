@@ -33,6 +33,9 @@ class Detail extends Component {
     }
 
     render() {
+
+        const foldergambar = "http://localhost:3001/images/";
+        
         const color = this.props.color2.map((x) => {
             return (
                 <div key = {x.id}>
@@ -101,7 +104,7 @@ class Detail extends Component {
                             <tbody>
                                 <tr>
                                     <td rowSpan = "3"> 
-                                        <img src = {process.env.PUBLIC_URL + "/images/" + image} alt = "Image" className = "foto-produk" />
+                                        <img src = {`${foldergambar}`+image} alt = "Image" className = "foto-produk" />
                                     </td>
                                     <td><ul>{color}</ul></td>
                                 </tr>

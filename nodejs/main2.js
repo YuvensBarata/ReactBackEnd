@@ -1,7 +1,7 @@
 var mysql = require("mysql");
 var express = require("express");
 var app = express();
-app.use( express.static( "public" ) );
+app.use('/images',express.static(__dirname+"/public/images/" ) );
 
 app.set("view engine","ejs");
 
@@ -1062,6 +1062,18 @@ app.get("/invoice_history_user/:id", function(req,res)
         {
             res.json(rows1)
         })
+})
+
+//----------------------------------------------- SEARCH BAR -------------------------------------------------
+
+app.get("/search/:id", function(req,res)
+{
+    connection.query(`SELECT id, product_name, price, product_image_name FROM product where product_name LIKE ?`,
+    '%'+req.params.id+'%',
+    function (err,rows1)
+    {
+        res.json(rows1);
+    })
 })
 
 

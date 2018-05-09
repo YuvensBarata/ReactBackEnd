@@ -3,32 +3,17 @@ import { Link } from "react-router-dom";
 
 import "../styles/Product.css";
 
-class Product extends Component {
+class Search extends Component {
 
     getdetailid = (id) => {
         this.props.getDetailID(id);
     }
-    
+
     render() {
 
         const foldergambar = "http://localhost:3001/images/";
 
-        // const product = this.props.product2.map((x) => {
-        //     return (
-        //         <div key = {x.id}>
-        //             <li>
-        //                 <Link to = {`/user_product_details/${x.id}`} onClick={() => this.getdetailid(x.id)}> {x.product_name} </Link>
-        //             </li>
-        //             <li>
-        //                 {x.price}
-        //             </li>
-        //             <br/>
-        //         </div>
-
-        //     )
-        // })
-
-        const product = this.props.product2.map((x,index) => {
+        const product = this.props.hasil_search.map((x,index) => {
             return (
                 <tbody key = {index}>
                     <tr>
@@ -68,4 +53,4 @@ class Product extends Component {
     }
 }
 
-export default Product;
+export default Search;

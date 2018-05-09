@@ -13,13 +13,14 @@ import Cart from "./components/Cart";
 import EditCart from "./components/EditCart";
 import Invoice from "./components/Invoice";
 import Invoice_history from "./components/Invoice_history";
+import Search from "./components/Search";
 
 class App extends Component 
 {
 
   constructor() {
     super();
-    this.state = {season: [],category: [], product: [], product_detail: [], color: [], size: [], nama_user: [], id_user: [], status_login: [], redirect_login: false, redirect_register: false, redirect_home: false, redirect_cart: false, redirect_inv: false, tempCartId: [], tempInvoiceId: []};
+    this.state = {season: [],category: [], product: [], product_detail: [], color: [], size: [], nama_user: [], id_user: [], status_login: [], redirect_login: false, redirect_register: false, redirect_home: false, redirect_cart: false, redirect_inv: false, tempCartId: [], tempInvoiceId: [], hasil_search: [], redirect_search : false};
   }
 
   componentWillMount()
@@ -209,6 +210,15 @@ class App extends Component
     this.setState({id_user : ""});
   }
 
+  search = (x) => {
+    axios.get(`http://localhost:3001/search/${x}`)
+    .then((ambilData) => 
+    {
+      this.setState({hasil_search : ambilData.data});
+      this.setState({redirect_search : true});
+    })
+  }
+
 
     render() {
 
@@ -217,6 +227,7 @@ class App extends Component
       const {redirect_home} = this.state;
       const {redirect_cart} = this.state;
       const {redirect_inv} = this.state;
+      const {redirect_search} = this.state;
 
       if (redirect_home) {
         this.setState({redirect_home: false});
@@ -252,10 +263,17 @@ class App extends Component
           <Redirect to = {`/invoice_user/${this.state.tempInvoiceId}`}/>
         )
       }
+
+      if (redirect_search) {
+        this.setState({redirect_search: false});
+        return(
+          <Redirect to = {`/search/${this.state.hasil_search}`} />
+        )
+      }
       
     return(
         <div className = "content">
-            <Navbar nama_user={this.state.nama_user} id_user={this.state.id_user} logOut = {this.logout}/>
+            <Navbar nama_user={this.state.nama_user} id_user={this.state.id_user} logOut = {this.logout} Search = {this.search}/>
             {/* <Route path = "/" render = {() => <Redirect to = "/user_home"/>}/> */}
             <Route path = "/user_home" render = {() => <Main season={this.state.season} getSeasonID={this.getseasonid}/>}/>
             <Route path = "/user_category" render = {() => <Category category2={this.state.category} getCategoryID={this.getcategoryid}/>}/>
@@ -267,6 +285,7 @@ class App extends Component
             <Route path = "/edit_cart/:id" render = {() => <EditCart postEdit={this.postedit}/>}/>
             <Route path = {`/invoice_user/${this.state.tempInvoiceId}`} render ={() => <Invoice invoice_kode={this.state.tempInvoiceId}/>}/>
             <Route path = {`/invoice_history_user/${this.state.id_user}`} render = {() => <Invoice_history id_user = {this.state.id_user} getInvID = {this.getinvid}/>} />
+            <Route path = {`/search`} render = {() => <Search hasil_search={this.state.hasil_search} getDetailID={this.getdetailid}/> } />
         </div>
     )
   }
