@@ -1,0 +1,20 @@
+{
+  "name": "adminreact",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.18.0",
+    "form-data": "^2.3.2",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
+    "react-dropzone": "^4.2.9",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "1.1.4"
+  },
+  "scripts": {
+    "start": "set PORT=3002 && react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}

@@ -23,6 +23,9 @@ var fs = require("fs");
 var cors = require("cors");
 app.use (cors());
 
+var multer  = require('multer')
+var upload = multer({ dest: 'uploads/' })
+
 var connection = mysql.createConnection
 (
     {
@@ -37,12 +40,7 @@ var connection = mysql.createConnection
 
 //--------------------------------------------------- Admin Login ----------------------------------------------
 
-app.get("/admin", function(req,res)
-{
-    res.render("admin_login");
-})
-
-app.post("/admin", function(req,res)
+app.post("/admin_login", function(req,res)
 {
     connection.query("select * from admin_login where ? and ?",
     [
@@ -58,16 +56,24 @@ app.post("/admin", function(req,res)
     {
         if (err) throw err;
 
+        let login_status;
+        let nama;
+        let id_admin;
+
         if (rows.length > 0)
         {
-            sesi = req.session;
-            sesi.admin_username = req.body.admin_name;
-            res.redirect("/admin_home");
+            login_status = "true";
+            nama = req.body.admin_username;
+            id_admin = rows[0].id;
         }
         else
         {
-            res.redirect("/admin");
+            login_status = "false";
+            nama = null;
+            id_admin = null;
         }
+        
+        res.json({login_status,nama,id_admin});
     })
 })
 
@@ -75,338 +81,193 @@ app.post("/admin", function(req,res)
 
 app.get("/admin_home", function(req,res)
 {
-    if (req.session.admin_username == null)
+    connection.query(`SELECT * FROM season_master`, function(err,rows)
     {
-        res.redirect("/admin")
-    }
-    else
-    {
-        connection.query(`SELECT * FROM season_master`, function(err,rows)
-        {
-            if (err) throw err;
-            res.render("admin_home",{data:rows,sesi:sesi.admin_username});
-        });
-    }
+        if (err) throw err;
+        res.json(rows);
+    });
 });
 
 app.get("/admin_category/:id", function(req,res)
 {
-    if (req.session.admin_username == null)
+    connection.query(`SELECT * FROM season_master where ?`,
     {
-        res.redirect("/admin")
-    }
-    else
+        id : req.params.id,
+    },
+    function(err,rows1)
     {
-        connection.query("SELECT id, season FROM season_master where ?",
+        connection.query(`SELECT id, category FROM product_category where ?`,
         {
-            id : req.params.id
+            season_id : req.params.id,
         },
-        function(err,rows1)
+        function(err,rows2)
         {
-            connection.query(`SELECT id, category FROM product_category where ?`,
-            {
-                season_id : req.params.id,
-            },
-            function(err,rows2)
-            {
-                if (err) throw err;
-                res.render("admin_product_category",{data1:rows1, data2:rows2,sesi:sesi.admin_username})
-            });
-        })  
-    }
+            if (err) throw err;
+            res.json({rows1,rows2});
+        });
+    })
 });
 
 app.get("/admin_product/:id", function(req,res)
 {
-    if (req.session.admin_username == null)
+    connection.query(`SELECT * FROM product_category where ?`,
     {
-        res.redirect("/admin")
-    }
-    else
+        id : req.params.id
+    },
+    function(err,rows1)
     {
-        connection.query("SELECT id, category FROM product_category where ?",
-        {
-            id : req.params.id
-        },
-        function(err,rows1)
-        {
-            connection.query(`SELECT * FROM product where ?`,
+        connection.query(`SELECT * FROM product where ?`,
             {
                 product_category_id : req.params.id,
             },
             function(err,rows2)
             {
                 if (err) throw err;
-                res.render("admin_product_name",{data1:rows1, data2:rows2,sesi:sesi.admin_username})
+                res.json({rows1,rows2});
             });
-        })  
-    }
+    })
+            
 });
 
 app.get("/admin_color/:id", function(req,res)
 {
-    if (req.session.admin_username == null)
+    connection.query("SELECT * FROM product where ?",
     {
-        res.redirect("/admin")
-    }
-    else
+        id : req.params.id
+    },
+    function(err,rows1)
     {
-        connection.query("SELECT id, product_name FROM product where ?",
+        connection.query(`SELECT id, color FROM product_color where ?`,
         {
-            id : req.params.id
+            product_name_id : req.params.id,
         },
-        function(err,rows1)
+        function(err,rows2)
         {
-            connection.query(`SELECT id, color FROM product_color where ?`,
-            {
-                product_name_id : req.params.id,
-            },
-            function(err,rows2)
-            {
-                if (err) throw err;
-                res.render("admin_product_color",{data1:rows1, data2:rows2,sesi:sesi.admin_username})
-            });
-        })  
-    }
+            if (err) throw err;
+            res.json({rows1,rows2});
+        });
+    }) 
 });
 
 app.get("/admin_size/:id", function(req,res)
 {
-    if (req.session.admin_username == null)
+    connection.query("SELECT * FROM product_color where ?",
     {
-        res.redirect("/admin")
-    }
-    else
+        id : req.params.id
+    },
+    function(err,rows1)
     {
-        connection.query("SELECT id, color FROM product_color where ?",
+        connection.query(`SELECT id, size, stock FROM product_size where ?`,
         {
-            id : req.params.id
+            product_color_id : req.params.id,
         },
-        function(err,rows1)
+        function(err,rows2)
         {
-            connection.query(`SELECT id, size, stock FROM product_size where ?`,
-            {
-                product_color_id : req.params.id,
-            },
-            function(err,rows2)
-            {
-                if (err) throw err;
-                res.render("admin_product_size",{data1:rows1, data2:rows2,sesi:sesi.admin_username})
-            });
-        })  
-    }
+            if (err) throw err;
+            res.json({rows1,rows2});
+        });
+    })
 });
 
 //---------------------------------------------- ADMIN DELETE -------------------------------------------
 
 app.get("/delete_season/:id", function(req,res)
 {
-    if (req.session.admin_username == null)
-    {
-        res.redirect("/admin")
-    }
-    else
-    {
         connection.query("delete from season_master where ?",
         {
             id: req.params.id
         });
-        res.redirect("/admin_home");
-    }
+
+        let redirect = "true"
+        res.json(redirect);
 });
 
 app.get("/delete_category/:id", function(req,res)
 {
-    if (req.session.admin_username == null)
-    {
-        res.redirect("/admin")
-    }
-    else
-    {
-        connection.query("SELECT season_id, id FROM product_category where ?",
-        {
-            id : req.params.id
-        },
-        function(err,data1)
-        {
+
             connection.query("delete from product_category where ?",
             {
-                id: data1[0].id
+                id: req.params.id
             });
-            res.redirect("/admin_category/" + data1[0].season_id);
-        })    
-    }
+
+            let redirect = "true"
+            res.json(redirect); 
 });
 
 app.get("/delete_product/:id", function(req,res)
 {
-    if (req.session.admin_username == null)
-    {
-        res.redirect("/admin")
-    }
-    else
-    {
-        connection.query("SELECT id, product_category_id, product_image_name FROM product where ?",
-        {
-            id : req.params.id
-        },
-        function(err,data1)
-        {
-            var filePath = __dirname + "/public/images/" + data1[0].product_image_name;
-            fs.unlinkSync(filePath);
+
+            // var filePath = __dirname + "/public/images/" + data1[0].product_image_name;
+            // fs.unlinkSync(filePath);
 
             connection.query("delete from product where ?",
             {
-                id: data1[0].id
+                id: req.params.id
             });
-            res.redirect("/admin_product/" + data1[0].product_category_id);
-        })    
-    }
+            let redirect = "true"
+            res.json(redirect);   
+
 });
 
 app.get("/delete_color/:id", function(req,res)
 {
-    if (req.session.admin_username == null)
-    {
-        res.redirect("/admin")
-    }
-    else
-    {
-        connection.query("SELECT product_name_id, id FROM product_color where ?",
-        {
-            id : req.params.id
-        },
-        function(err,data1)
-        {
+
             connection.query("delete from product_color where ?",
             {
-                id: data1[0].id
+                id: req.params.id
             });
-            res.redirect("/admin_color/" + data1[0].product_name_id);
-        })    
-    }
+
+            let redirect = "true"
+            res.json(redirect);
+
 });
 
 app.get("/delete_size/:id", function(req,res)
 {
-    if (req.session.admin_username == null)
-    {
-        res.redirect("/admin")
-    }
-    else
-    {
-        connection.query("SELECT product_color_id, id FROM product_size where ?",
-        {
-            id : req.params.id
-        },
-        function(err,data1)
-        {
+
             connection.query("delete from product_size where ?",
             {
-                id: data1[0].id
+                id: req.params.id
             });
-            res.redirect("/admin_size/" + data1[0].product_color_id);
-        })    
-    }
+            
+            let redirect = "true"
+            res.json(redirect); 
 });
 
 //----------------------------------------------- ADMIN EDIT ------------------------------------------------
-
-app.get("/edit_season/:id", function(req,res)
-{
-    if (req.session.admin_username == null)
-    {
-        res.redirect("/admin")
-    }
-    else
-    {
-        res.render("admin_edit_season", {id : req.params.id,sesi:sesi.admin_username});
-    }
-});
-
-app.get("/edit_category/:id", function(req,res)
-{
-    if (req.session.admin_username == null)
-    {
-        res.redirect("/admin")
-    }
-    else
-    {
-    res.render("admin_edit_category", {id : req.params.id,sesi:sesi.admin_username});
-    }
-});
-
-app.get("/edit_product/:id", function(req,res)
-{
-    if (req.session.admin_username == null)
-    {
-        res.redirect("/admin")
-    }
-    else
-    {
-        res.render("admin_edit_product", {id : req.params.id,sesi:sesi.admin_username});
-    }
-});
-
-app.get("/edit_color/:id", function(req,res)
-{
-    if (req.session.admin_username == null)
-    {
-        res.redirect("/admin")
-    }
-    else
-    {
-        res.render("admin_edit_color", {id : req.params.id,sesi:sesi.admin_username});
-    }
-});
-
-app.get("/edit_size/:id", function(req,res)
-{
-    if (req.session.admin_username == null)
-    {
-        res.redirect("/admin")
-    }
-    else
-    {
-        res.render("admin_edit_size", {id : req.params.id,sesi:sesi.admin_username});
-    }
-});
 
 app.post('/edit_season/:id', function(req, res){
 
     connection.query("update season_master set ? where ?",
     [
     {
-        season: req.body.season,
+        season: req.body.edit_season,
     }
     ,
     {
-        ID : req.params.id,
+        id : req.params.id,
     }
     ]);
-    res.redirect("/admin_home");
+    
+    let redirect = "true"
+    res.json(redirect);
 })
 
 app.post("/edit_category/:id", function(req,res)
 {
-    connection.query("SELECT season_id, id FROM product_category where ?",
-    {
-        id : req.params.id
-    },
-    function(err,data1)
-    {
         connection.query("update product_category set ? where ?",
         [
             {
-                category : req.body.category,
+                category : req.body.edit_category,
             }
         ,
             {
                 id : req.params.id,
             }
         ]);
-        res.redirect("/admin_category/" + data1[0].season_id);
-    })
+
+        let redirect = "true"
+        res.json(redirect);
 })
 
 app.post("/edit_product/:id", function(req,res)
@@ -417,145 +278,80 @@ app.post("/edit_product/:id", function(req,res)
     },
     function(err,data1)
     {
-        if (!req.files.userfile)
-            return res.status(400).send("No files were uploaded.");
+        // if (!req.files.userfile)
+        //     return res.status(400).send("No files were uploaded.");
 
-        let userfile = req.files.userfile;
-        var image_name = uniqid() + "." + req.files.userfile.mimetype.split("/")[1];
+        // let userfile = req.files.userfile;
+        // var image_name = uniqid() + "." + req.files.userfile.mimetype.split("/")[1];
 
-        userfile.mv(__dirname + "/public/images/" + image_name, function(err) { });
+        // userfile.mv(__dirname + "/public/images/" + image_name, function(err) { });
 
         connection.query("update product set ? where ?",
         [
             {
-                product_name: req.body.product,
-                price : req.body.price,
-                description : req.body.description,
-                product_image_name : image_name
+                product_name: req.body.edit_product,
+                price : req.body.edit_price,
+                description : req.body.edit_description,
+                // product_image_name : image_name
             }
         ,
             {
                 id : req.params.id,
             }
         ]);
-        res.redirect("/admin_product/" + data1[0].product_category_id);
+        let redirect = "true"
+        res.json(redirect);
     })
 })
 
 app.post("/edit_color/:id", function(req,res)
 {
-    connection.query("SELECT product_name_id, id FROM product_color where ?",
-    {
-        id : req.params.id
-    },
-    function(err,data1)
-    {
+
         connection.query("update product_color set ? where ?",
         [
             {
-                color: req.body.color,
+                color: req.body.edit_color,
             }
         ,
             {
                 id : req.params.id,
             }
         ]);
-        res.redirect("/admin_color/" + data1[0].product_name_id);
-    })
+
+        let redirect = "true"
+        res.json(redirect);
+
 })
 
 app.post("/edit_size/:id", function(req,res)
 {
-    connection.query("SELECT product_color_id, id FROM product_size where ?",
-    {
-        id : req.params.id
-    },
-    function(err,data1)
-    {
         connection.query("update product_size set ? where ?",
         [
             {
-                size: req.body.size,
-                stock: req.body.stock,
+                size: req.body.edit_size,
+                stock: req.body.edit_stock,
             }
         ,
             {
                 id : req.params.id,
             }
         ]);
-        res.redirect("/admin_size/" + data1[0].product_color_id);
-    })
+
+        let redirect = "true"
+        res.json(redirect);
 })
 
 //------------------------------------------------ ADMIN ADD --------------------------------------------------
-
-app.get("/add_season", function(req,res)
-{
-    if (req.session.admin_username == null)
-    {
-        res.redirect("/admin")
-    }
-    else
-    {
-        res.render("admin_add_season", {id : req.params.id,sesi:sesi.admin_username});
-    }
-});
-
-app.get("/add_category/:id", function(req,res)
-{
-    if (req.session.admin_username == null)
-    {
-        res.redirect("/admin")
-    }
-    else
-    {
-        res.render("admin_add_category", {id : req.params.id,sesi:sesi.admin_username});
-    }
-});
-
-app.get("/add_product/:id", function(req,res)
-{
-    if (req.session.admin_username == null)
-    {
-        res.redirect("/admin")
-    }
-    else
-    {
-        res.render("admin_add_product", {id : req.params.id,sesi:sesi.admin_username});
-    }
-});
-
-app.get("/add_color/:id", function(req,res)
-{
-    if (req.session.admin_username == null)
-    {
-        res.redirect("/admin")
-    }
-    else
-    {
-        res.render("admin_add_color", {id : req.params.id,sesi:sesi.admin_username});
-    }
-});
-
-app.get("/add_size/:id", function(req,res)
-{
-    if (req.session.admin_username == null)
-    {
-        res.redirect("/admin")
-    }
-    else
-    {
-        res.render("admin_add_size", {id : req.params.id,sesi:sesi.admin_username});
-    }
-});
 
 app.post('/add_season', function(req, res){
 
     connection.query("insert season_master set ?",
     {
-        season : req.body.season
+        season : req.body.new_season
     });
-    res.redirect("/admin_home");
+
+    let redirect = "true"
+    res.json(redirect);
 })
 
 app.post("/add_category/:id", function(req,res)
@@ -568,39 +364,42 @@ app.post("/add_category/:id", function(req,res)
     {
         connection.query("insert into product_category set ?",
         {
-            category: req.body.category,
+            category: req.body.new_category,
             season_id : data1[0].id
         });
-        res.redirect("/admin_category/" + data1[0].id);
+        
+        let redirect = "true"
+        res.json(redirect);
     })
 })
 
-app.post("/add_product/:id", function(req,res)
+app.post("/add_product/:id", upload.single('avatar'), function(req,res)
 {
+    // console.log(req.body);
+    // console.log(req.files);
     connection.query("SELECT * FROM product_category where ?",
     {
         id : req.params.id
     },
     function(err,data1)
     {
-        if (!req.files.userfile)
-            return res.status(400).send("No files were uploaded.");
 
-        let userfile = req.files.userfile;
-        var image_name = uniqid() + "." + req.files.userfile.mimetype.split("/")[1];
+        // let userfile = req.files.userfile;
+        // var image_name = uniqid() + "." + req.files.userfile.mimetype.split("/")[1];
 
-        userfile.mv(__dirname + "/public/images/" + image_name, function(err) {});
+        // userfile.mv(__dirname + "/public/images/" + image_name, function(err) {});
 
         connection.query("insert into product set ?",
         {
-            product_name: req.body.product,
-            price : req.body.price,
-            description : req.body.description,
+            product_name: req.body.new_product,
+            price : req.body.new_price,
+            description : req.body.new_description,
             product_category_id : data1[0].id,
-            product_image_name : image_name
+            // product_image_name : null
         });
 
-        res.redirect("/admin_product/" + data1[0].id);
+        let redirect = "true"
+        res.json(redirect);
     })
 })
 
@@ -614,10 +413,12 @@ app.post("/add_color/:id", function(req,res)
     {
         connection.query("insert into product_color set ?",
         {
-            color: req.body.color,
+            color: req.body.new_color,
             product_name_id : data1[0].id
         });
-        res.redirect("/admin_color/" + data1[0].id);
+
+        let redirect = "true"
+        res.json(redirect);
     })
 })
 
@@ -631,11 +432,13 @@ app.post("/add_size/:id", function(req,res)
     {
         connection.query("insert into product_size set ?",
         {
-            size: req.body.size,
-            stock: req.body.stock,
+            size: req.body.new_size,
+            stock: req.body.new_stock,
             product_color_id : data1[0].id
         });
-        res.redirect("/admin_size/" + data1[0].id);
+
+        let redirect = "true"
+        res.json(redirect);
     })
 })
 
@@ -643,12 +446,6 @@ app.post("/add_size/:id", function(req,res)
 
 app.get("/invoice_admin/:id", function(req,res)
 {
-    if (req.session.admin_username == null)
-    {
-        res.redirect("/admin")
-    }
-    else
-    {
         connection.query("SELECT * FROM invoice_data where ?",
         {
             kode_invoice : req.params.id
@@ -662,28 +459,20 @@ app.get("/invoice_admin/:id", function(req,res)
             function(err,rows2)
             {
                 if (err) throw err;
-                res.render("admin_invoice",{data1 : rows1, data2: rows2, sesi: req.session.admin_username})
+                res.json({rows1,rows2});
             })
         })
-    }
 })
 
 //------------------------------------------- INVOICE HISTORY USER ----------------------------------------------
 
 app.get("/invoice_history_admin", function(req,res)
 {
-    if (req.session.admin_username == null)
-    {
-        res.redirect("/admin")
-    }
-    else
-    {
         connection.query("SELECT kode_invoice, total_price, time FROM invoice_data", function(err,rows1)
         {
             if (err) throw err;
-            res.render("admin_invoice_history", {data1 : rows1, sesi: req.session.admin_username})
+            res.json(rows1)
         })
-    }
 })
 
 //-------------------------------------------- USER REGISTER & LOGIN -----------------------------------------------
@@ -810,7 +599,7 @@ app.get("/user_product/:id", function(req,res)
     },
     function(err,rows1)
     {
-        connection.query(`SELECT id, product_name, price, product_image_name FROM product where ?`,
+        connection.query(`SELECT id, product_name, price, product_image_name, description FROM product where ?`,
         {
             product_category_id : req.params.id,
         },
